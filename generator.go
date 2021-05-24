@@ -23,6 +23,12 @@ func NewGenerator() *Generator {
 	generator.mutex = new(sync.Mutex)
 	generator.nodeID = uint64(nodeID())
 
+	// Theoretically, NextID could fail to return a unique ID if the node crashed
+	// and restarted in the same millisecond. Similarly, if the entire system crashed
+	// and restarted in the same millisecond each node could create duplicate IDs.
+	// By sleeping for a single millisecond at startup we remove that as a possibility.
+	time.Sleep(1 * time.Millisecond)
+
 	return generator
 }
 
